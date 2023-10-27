@@ -1,0 +1,9 @@
+streamlit
+streamlit-lottie
+streamlit-option-menu
+streamlit-extras
+pymongo
+pandas 
+numpy 
+pickle
+scikit-learn==1.3.1
