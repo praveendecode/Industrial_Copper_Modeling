@@ -1,679 +1,41 @@
-from  streamlit import *
-from streamlit_extras import *
-from streamlit_lottie import *
-from streamlit_option_menu import *
-import pandas as pd 
-from streamlit_extras.colored_header import colored_header
-from streamlit_extras.metric_cards import style_metric_cards
-import plotly.express as px
-from streamlit_extras.keyboard_url import keyboard_to_url
+import streamlit as st
 from streamlit_lottie import st_lottie
+from streamlit_option_menu import *
+from streamlit_extras.colored_header import colored_header
+from streamlit_extras.keyboard_url import keyboard_to_url
 import json as js
+import numpy as np
+from datetime import date
+import pickle
 import pymongo as pm
+import time 
+class App:
 
+    def model(self):
 
-
-class airbnb:
-
-    def dashboard(self):
-                            
-        st.set_page_config(page_title='airBnB Project By Praveen', layout="wide")
+        st.set_page_config(page_title='ICM Project By Praveen', layout="wide")
 
         
-                                                                                         # PROGRAMS INITIATED
-        with st.sidebar:     # Navbar
-                        selected = option_menu(
-                                                   menu_title="airbnb",
-                                                   options=['Intro','Descriptive Statistics',"Insights","Tableau dashboard",'Feedback'],
-                                                   icons = ['mic-fill','cash-stack','phone-flip','geo-alt-fill','clock-fill','globe-central-south-asia','envelope-paper-heart-fill'],
-                                                   menu_icon='alexa',
-                                                   default_index=0,
-                                               )
-                        
-                            #  Pandas 
-                        df = pd.read_csv("Airbnbfinal_data.csv")
-                        df['id'] = df['id'].apply(lambda x : str(x))
-                        df['host_iD'] = df['host_iD'].apply(lambda x : str(x))
-                        continous_features = df.select_dtypes(include=['int64','float64']).columns
-                        cat_deatures = df.select_dtypes(include=['object']).columns
-        
+        with st.sidebar:  # Navbar
+            selected = option_menu(
+                menu_title="ICM Workflow",
+                options=['Intro', "Classification Model", "Regression Model",'Feedback'],
+                icons=['mic-fill', '', '', '', ''],
+                menu_icon='alexa',
+                default_index=0,
+            )
+
         def lottie(filepath):
-                        with open(filepath, 'r') as file:
-                            return js.load(file)
-
-                        
-        if selected =='Descriptive Statistics':
-                
-                
-                st.markdown("<style>div.block-container{padding-top:3rem;}</style>", unsafe_allow_html=True)
-
-                                
-                explore = option_menu(
-                            menu_title="",
-                            options=['Click', 'Features','Summary'],
-                            icons=['arrow-right-circle-fill', 'eye-fill'],
-                            menu_icon='',
-                            default_index=0,
-                            orientation='horizontal')
-                
-                
-                
-               
- 
-                
-                if explore == 'Features':
-                        
-
-                        col1,col2,col3 = st.columns([12.5,10,10])
-
-                        col2.write("")
-                        col2.write("")
-                        col2.write("")
-
-                        col2.markdown( "<h1 style='font-size: 90px;'><span style='color: cyan;'>Load</span> <span style='color: white;'</span> <span style='color: white;'>Dataset</span></h1>",unsafe_allow_html=True)
-
-
-                      
-                        col2.write("")
-                        col1,col2,col3 = st.columns([10,10,9])
-
-                        col2.write("")
-                        uploaded_file = col2.file_uploader("   ", type=["csv", "txt", "jpg", "png", "pdf"])
-
-                        if uploaded_file is not None:
-                                # Save the uploaded file
-                                with open('uploaded_data.csv', "wb") as f:
-                                    f.write(uploaded_file.read())
-                                df_100 = pd.read_csv('uploaded_data.csv')
-
-                        
-                        col2.write("")
-                        col2.write("")
-                        col2.write("")
-                        # col2.write("")
-                        # col2.write("")
-                        col1,col2,col3 = st.columns([12,10,10])
-                        col2.write("")
-                        col2.write("")
-                        col2.write("")
-                        col2.write("")
-
-                        col2.markdown( "<h1 style='font-size: 70px;'><span style='color: cyan;'>Know </span> <span style='color: white;'>The</span> <span style='color: cyan;'>Features</span></h1>",unsafe_allow_html=True)
-
-
-
-                        
-                        col2.write("")
-                        col2.write("")
-                        col1,col2,col3 = st.columns([18,10,10])
-
-                        # Continous and categorical values
-                        df['id'] = df['id'].apply(lambda x : str(x))
-                        df['host_iD'] = df['host_iD'].apply(lambda x : str(x))
-                        continous_features = df.select_dtypes(include=['int64','float64']).columns
-                        cat_deatures = df.select_dtypes(include=['object']).columns 
-                
-                        if col2.button('Know features'):
-                                 
-                            col1,col2,col3,col4 = st.columns([2,10,10,2])
-
-                            col2.write("")
-                            col2.write("")
-                            col2.write("")
-                            
-                            with col2 :
-                                st.markdown( f"<h1 style='font-size: 50px;'><span style='color: cyan;'>Continous</span><span style='color: White;'> Features</span> </h1>",unsafe_allow_html=True)
-                                colored_header(
-                                label="",
-                                description="",
-                                color_name="blue-green-70", )
-
-                                   
-                                for i in continous_features:
-                                        st.markdown( f"<h1 style='font-size: 25px;'><span style='color: white;'> {i} </span> </h1>",unsafe_allow_html=True)
-                            col3.write("")
-                            col3.write("")
-                            col3.write("")
-                            with col3 :
-                                st.markdown( f"<h1 style='font-size: 50px;'><span style='color: cyan;'>Categorical </span><span style='color: White;'> Features</span> </h1>",unsafe_allow_html=True)
-                                colored_header(
-                                label="",
-                                description="",
-                                color_name="blue-green-70", )
-
-                                   
-                                for i in cat_deatures:
-                                        st.markdown( f"<h1 style='font-size: 25px;'><span style='color: white;'> {i} </span> </h1>",unsafe_allow_html=True)
-
-                elif explore == "Summary":
-
-                       
-                    col1,col2,col3 = st.columns([7,10,5])
-                    col2.write("")
-                    col2.write("")
-                    col2.write("")
-                    col2.write("")
-                    col2.write("")
-                    col2.write("")
-                    col2.markdown( f"<h1 style='font-size: 100px;'><span style='color: cyan;'> Summary </span><span style='color: white;'> Statistics </span> </h1>",unsafe_allow_html=True)
-                    col2.write("")
-                    col2.write("")
-                    col2.write("")
-                    col2.write("")
-                    col2.write("")
-                    col2.write("")
-                    col1,col2,col3 = st.columns([9,10,5])
-                    col2.markdown( f"<h1 style='font-size: 40px;'><span style='color: cyan;'> Select </span><span style='color: white;'> Feature Type </span> </h1>",unsafe_allow_html=True)
-
-                    col1,col2,col3 = st.columns([9,10,5])
-                    select = col2.selectbox('',['Continous Features','Categorical Features'])
-                    # col2.write("")
-                    # col2.write("")
-                    col2.write("")
-                    col2.write("")
-
-                    if select == 'Continous Features':
-                        col2.markdown( f"<h1 style='font-size: 60px;'><span style='color: cyan;'> Continous </span><span style='color: white;'> Features </span> </h1>",unsafe_allow_html=True)
-
-                        col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Select </span><span style='color: white;'> Feature </span> </h1>",unsafe_allow_html=True)
-
-                        option = col2.selectbox('',continous_features)
-                        if col2.button('Show'):
-
-                            x = df[option].describe()
-
-                            col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Selected Feature : </span><span style='color: white;'> {option}</span> </h1>",unsafe_allow_html=True)
-                            col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Count : </span><span style='color: white;'>{x[0]} </span> </h1>",unsafe_allow_html=True)
-                            col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Mean : </span><span style='color: white;'> {x[1]} </span> </h1>",unsafe_allow_html=True)
-                            col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Std :  </span><span style='color: white;'> {x[2]}</span> </h1>",unsafe_allow_html=True)
-                            col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Min  : </span><span style='color: white;'>  {x[3]}</span> </h1>",unsafe_allow_html=True)
-                            col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> 25 % : </span><span style='color: white;'> {x[4]}</span> </h1>",unsafe_allow_html=True)
-                            col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> 50 % : </span><span style='color: white;'>  {x[5]}</span> </h1>",unsafe_allow_html=True)
-                            col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> 75 % : </span><span style='color: white;'>  {x[6]}</span> </h1>",unsafe_allow_html=True)
-                            col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Max  : </span><span style='color: white;'>  {x[7]}</span> </h1>",unsafe_allow_html=True)
-                            col1,col2,col3 = st.columns([7,10,5])
-                            col2.write("")
-                            col2.write("")
-                            col2.write("")
-                            col2.write("")
-                            col2.write("")
-                            col2.write("")
-                            col2.markdown( f"<h1 style='font-size: 100px;'><span style='color: cyan;'> Feature </span><span style='color: white;'>  Distribution </span> </h1>",unsafe_allow_html=True)
-                            col2.write("")
-                            col2.write("")
-                            col2.write("")
-                            col2.markdown( f"<h1 style='font-size: 40px;'><span style='color: cyan;'> {option} </span><span style='color: white;'> Feature  Distribution </span> </h1>",unsafe_allow_html=True)
-
-                            
-                            fig = px.histogram(df[f'{option}'], nbins=20)
-                            fig.update_layout(
-                                plot_bgcolor='#0E1117',
-                                paper_bgcolor='#0E1117',
-                                xaxis_title_font=dict(color='#0DF0D4'),
-                                yaxis_title_font=dict(color='#0DF0D4')
-                            )
-                            fig.update_traces(hoverlabel=dict(bgcolor="#0E1117"),
-                                                hoverlabel_font_color="#0DF0D4")
-                            fig.update_xaxes(title_text="Availability Types")
-
-                            fig.update_yaxes(title_text="Days  Count")
-
-                            fig.update_traces(marker_color='#1BD4BD')
-                            
-                            st.plotly_chart(fig, theme=None, use_container_width=True)
-                
-
-
-
-                    elif select == 'Categorical Features':
-                        col2.markdown( f"<h1 style='font-size: 60px;'><span style='color: cyan;'> Categorical  </span><span style='color: white;'> Features </span> </h1>",unsafe_allow_html=True)
-
-                        col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Select </span><span style='color: white;'> Feature </span> </h1>",unsafe_allow_html=True)
-
-                        option = col2.selectbox('',cat_deatures)
-
-                        if col2.button('Show'):
-
-                            x = df[option].describe()
-
-                            col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Selected Feature : </span><span style='color: white;'> {option}</span> </h1>",unsafe_allow_html=True)
-                            col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Count : </span><span style='color: white;'>{x[0]} </span> </h1>",unsafe_allow_html=True)
-                            col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Unique : </span><span style='color: white;'> {x[1]} </span> </h1>",unsafe_allow_html=True)
-                            col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Top :  </span><span style='color: white;'> {x[2]}</span> </h1>",unsafe_allow_html=True)
-                            col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Feq  : </span><span style='color: white;'>  {x[3]}</span> </h1>",unsafe_allow_html=True)
-                
-                    
-                elif explore == 'Click':
-
-                    col1,col2,col3 = st.columns([5,10,5])
-                    col2.write("")
-                    col2.write("")
-                    def lottie(filepath):
-                        with open(filepath, 'r') as file:
-                            return js.load(file)
-
-                    col1, col2, col3 = st.columns([1, 10, 1])
-                    with col2:
-                        file = lottie("stats2.json")
-                        st_lottie(
-                            file,
-                            speed=1,
-                            reverse=False,
-                            loop=True,
-                            quality='low',
-                            height=1000,
-                            width=1700,
-                            key=None
-                        )
-        
-
-
-        elif selected == 'Insights':
-                st.markdown("<style>div.block-container{padding-top:3rem;}</style>", unsafe_allow_html=True)
-
-                # Metrics 
-
-                col1,col2,col3,col4,col5 = st.columns([10,10,10,10,10])
-
-                col1.metric(label="Total Host Count", value=f'{len(df.host_name.unique())}',delta=int(len(df.host_name.unique())/100))
-                col2.metric(label="Total Room Types", value=f'{len(df.room_type.unique())}',delta=int(len(df.room_type.unique())))
-                col3.metric(label="Total Listings Available", value=f'{len(df.name.unique())}',delta=int(len(df.name.unique())/10))
-                col4.metric(label="Total Amount Earned", value=f'{df.price.sum()}',delta=int(df.price.sum()/100))
-                col5.metric(label="Total Host Neighbourhood", value=f'{len(df.host_neighbourhood.unique())}',delta=int(len(df.host_neighbourhood.unique())/10))
-
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                # Filters :
-                col1,col2,col3,col4 ,col5,col6,col7= st.columns([10,10,10,10,10,10,10])
-
-                with col2.expander("FILTER"):
-
-                    st.write("")
-                    room_type = st.selectbox('CHOOSE ROOM TYPE',df.room_type.unique())
-
-                with col4.expander("FILTER"):
-
-                    st.write("")
-                    place = st.selectbox('CHOOSE HOST NEIGHBOURHOOD',df.host_neighbourhood.unique())
-
-                with col6.expander("FILTER"):
-
-                    st.write("")
-                    property_type = st.selectbox('CHOOSE Property Type',df.property_type.unique())
-
-                
+            with open(filepath, 'r') as file:
+              return js.load(file)
             
-
-                # Availaibility
-                col1,col2 = st.columns([10,10])
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.markdown( f"<h1 style='font-size: 70px;'><span style='color: cyan;'> Availability  </span><span style='color: white;'> Analysis </h1>",unsafe_allow_html=True)
-
-                col1,col2,col3 = st.columns([10,20,5])
-                col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Availability  days </span><span style='color: white;'>  based on</span> <span style='color: white;'> {room_type} and {property_type} and {place} </span></h1>",unsafe_allow_html=True)
-                col1,col2 = st.columns([10,10])
-
-                value = df.query(f"room_type=='{room_type}' and property_type == '{property_type}' and host_neighbourhood=='{place}'")[['availability_30', 'availability_60', 'availability_90', 'availability_365']].sum()
-                name=['availability_30','availability_60','availability_90','availability_365']
-
-                fig = px.bar( x=name, y=value)
-                fig.update_layout(title_x=1)
-                fig.update_layout(
-                    plot_bgcolor='#0E1117',
-                    paper_bgcolor='#0E1117',
-                    xaxis_title_font=dict(color='#0DF0D4'),
-                    yaxis_title_font=dict(color='#0DF0D4')
-                )
-                fig.update_traces(hoverlabel=dict(bgcolor="#0E1117"),
-                                    hoverlabel_font_color="#0DF0D4")
-                fig.update_xaxes(title_text="Availability Types")
-
-                fig.update_yaxes(title_text="Days  Count")
-
-                fig.update_traces(marker_color='#1BD4BD')
-                
-                st.plotly_chart(fig, theme=None, use_container_width=True)
-                
-               
-
-                # Host Analysis
-
-                col1,col2 = st.columns([10,10])
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.write("")
-              
-                col1.markdown( f"<h1 style='font-size: 70px;'><span style='color: cyan;'> Host  </span><span style='color: white;'> Analysis </h1>",unsafe_allow_html=True)
-                 # Filters :
-                col1,col2,col3= st.columns([10,10,10])
-                
-                
-                
-                # 1
-
-                col1,col2,col3= st.columns([13,10,15])
-                col2.write("")
-                with col2.expander("FILTER"):
-
-                    st.write("")
-                    place = st.selectbox('HOST NEIGHBOURHOOD',df.host_neighbourhood.unique())
-                col1,col2,col3 = st.columns([10,20,5])
-                col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Top  10  Hosts </span><span style='color: white;'>  based on </span> <span style='color: white;'> Host Neighbourhood : {place} </span></h1>",unsafe_allow_html=True)
-                
-                col1,col2 = st.columns([10,10])
-
-                filter = df.query(f"host_neighbourhood=='{place}'").groupby('host_name')['host_total_listings_count'].sum().nlargest(10)
-                name = filter.index.tolist()
-                value = filter.values.tolist()
-                fig = px.bar( x=name, y=value)
-                fig.update_layout(title_x=1)
-                fig.update_layout(
-                    plot_bgcolor='#0E1117',
-                    paper_bgcolor='#0E1117',
-                    xaxis_title_font=dict(color='#0DF0D4'),
-                    yaxis_title_font=dict(color='#0DF0D4')
-                )
-                fig.update_traces(hoverlabel=dict(bgcolor="#0E1117"),
-                                    hoverlabel_font_color="#0DF0D4")
-                fig.update_xaxes(title_text="Host Name")
-
-                fig.update_yaxes(title_text="Listings Count")
-
-                fig.update_traces(marker_color='#1BD4BD')
-                
-                st.plotly_chart(fig, theme=None, use_container_width=True)
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                 # 2
-                col1,col2,col3= st.columns([13,10,15])
-                with col2.expander("FILTER"):
-
-                    st.write("")
-                    room_type = st.selectbox('ROOM TYPE',df.room_type.unique())
-                col1,col2,col3 = st.columns([10,20,5])
-                col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Top  10  Hosts </span><span style='color: white;'>  based on </span> <span style='color: white;'> Room Type : {room_type} </span></h1>",unsafe_allow_html=True)
-               
-                col1,col2 = st.columns([10,10])
-
-                filter = df.query(f"room_type=='{room_type}'").groupby('host_name')['host_total_listings_count'].sum().nlargest(10)
-                name = filter.index.tolist()
-                value = filter.values.tolist()
-                fig = px.bar( x=name, y=value)
-                fig.update_layout(title_x=1)
-                fig.update_layout(
-                    plot_bgcolor='#0E1117',
-                    paper_bgcolor='#0E1117',
-                    xaxis_title_font=dict(color='#0DF0D4'),
-                    yaxis_title_font=dict(color='#0DF0D4')
-                )
-                fig.update_traces(hoverlabel=dict(bgcolor="#0E1117"),
-                                    hoverlabel_font_color="#0DF0D4")
-                fig.update_xaxes(title_text="Host Name")
-
-                fig.update_yaxes(title_text="Listings Count")
-
-                fig.update_traces(marker_color='#1BD4BD')
-                
-                st.plotly_chart(fig, theme=None, use_container_width=True)
-
-                # Room_type Analysis
-                col1,col2 = st.columns([10,10])
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.markdown( f"<h1 style='font-size: 70px;'><span style='color: cyan;'> Room Type  </span><span style='color: white;'> Analysis </h1>",unsafe_allow_html=True)
-                col1.write("")
-                col1.write("")
-                col1,col2,col3= st.columns([13,10,15])
-                with col2.expander("FILTER"):
-
-                    st.write("")
-                    room_type = st.selectbox('Room Type',df.room_type.unique())
-
-                    option = st.selectbox('Choose Option',['Minimun','Maximum'])
-
-
-
-                col1,col2,col3 = st.columns([7,20,5])
-
-                if option == 'Minimun':
-
-                    col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Top 10  </span><span style='color: white;'> minimun price host neighbourhoods based on Room Type :</span> <span style='color: cyan;'> {room_type}</span></h1>",unsafe_allow_html=True)
-                    filter = df.query(f"room_type== '{room_type}'").groupby('host_neighbourhood')['price'].mean().nsmallest(10)
-
-                    name = filter.index.tolist()
-
-                    value = filter.values.tolist()
-                    fig = px.bar( x=name, y=value)
-                    fig.update_layout(title_x=1)
-                    fig.update_layout(
-                        plot_bgcolor='#0E1117',
-                        paper_bgcolor='#0E1117',
-                        xaxis_title_font=dict(color='#0DF0D4'),
-                        yaxis_title_font=dict(color='#0DF0D4')
-                    )
-                    fig.update_traces(hoverlabel=dict(bgcolor="#0E1117"),
-                                        hoverlabel_font_color="#0DF0D4")
-                    fig.update_xaxes(title_text="Host Name")
-
-                    fig.update_yaxes(title_text="Listings Count")
-
-                    fig.update_traces(marker_color='#1BD4BD')
-                    
-                    st.plotly_chart(fig, theme=None, use_container_width=True)
-
-                elif option == 'Maximum':
-
-                    col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Top 10  </span><span style='color: white;'> Maximun price host neighbourhoods based on Room Type :</span> <span style='color: cyan;'> {room_type}</span></h1>",unsafe_allow_html=True)
-                    filter = df.query(f"room_type== '{room_type}'").groupby('host_neighbourhood')['price'].mean().nlargest(10)
-
-                    name = filter.index.tolist()
-
-                    value = filter.values.tolist()
-                    fig = px.bar( x=name, y=value)
-                    fig.update_layout(title_x=1)
-                    fig.update_layout(
-                        plot_bgcolor='#0E1117',
-                        paper_bgcolor='#0E1117',
-                        xaxis_title_font=dict(color='#0DF0D4'),
-                        yaxis_title_font=dict(color='#0DF0D4')
-                    )
-                    fig.update_traces(hoverlabel=dict(bgcolor="#0E1117"),
-                                        hoverlabel_font_color="#0DF0D4")
-                    fig.update_xaxes(title_text="Host Name")
-
-                    fig.update_yaxes(title_text="Listings Count")
-
-                    fig.update_traces(marker_color='#1BD4BD')
-                    
-                    st.plotly_chart(fig, theme=None, use_container_width=True)
-                     
-                col2.write("")
-                col2.write("")
-                col2.write("")
-                col2.write("")
-                col2.write("")
-                col1,col2,col3= st.columns([13,10,15])
-                with col2.expander("FILTER"):
-
-                    st.write("")
-                    room_type = st.selectbox('Choose Room Type',df.room_type.unique())
-
-
-
-
-                col1,col2,col3 = st.columns([7,20,5])
-                col2.markdown( f"<h1 style='font-size: 30px;'><span style='color: cyan;'> Top 10  </span><span style='color: white;'> maximun review host neighbourhoods based on Room Type :</span> <span style='color: cyan;'> {room_type}</span></h1>",unsafe_allow_html=True)
-                filter = df.query(f"room_type== '{room_type}'").groupby('host_neighbourhood')['number_of_Reviews'].sum().nlargest(10)
-
-                name = filter.index.tolist()
-
-                value = filter.values.tolist()
-                fig = px.bar( x=name, y=value)
-                fig.update_layout(title_x=1)
-                fig.update_layout(
-                    plot_bgcolor='#0E1117',
-                    paper_bgcolor='#0E1117',
-                    xaxis_title_font=dict(color='#0DF0D4'),
-                    yaxis_title_font=dict(color='#0DF0D4')
-                )
-                fig.update_traces(hoverlabel=dict(bgcolor="#0E1117"),
-                                    hoverlabel_font_color="#0DF0D4")
-                fig.update_xaxes(title_text="Host Name")
-
-                fig.update_yaxes(title_text="Review Count")
-
-                fig.update_traces(marker_color='#1BD4BD')
-                
-                st.plotly_chart(fig, theme=None, use_container_width=True)
-
-                # Price  Analysis
-                col1,col2 = st.columns([10,10])
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.markdown( f"<h1 style='font-size: 70px;'><span style='color: cyan;'> Price  </span><span style='color: white;'> Analysis </h1>",unsafe_allow_html=True)
-                col1.write("")
-                col1.write("")
-
-                df_1 = df.copy()
-                df_1.columns = ['id', 'name', 'description', 'Property Type', 'Room Type',
-                            'minimum_nights', 'maximum_nights', 'number_of_Reviews', 'amenities',
-                            'price', 'host_iD', 'Host', 'Host Neighbourhood',
-                            'host_total_listings_count', 'longitide', 'latitude', 'availability_30',
-                            'availability_60', 'availability_90', 'availability_365', 'rating'] 
-                col1,col2,col3,col4,col5 = st.columns([10,10,10,10,10])
-                with col2.expander("FILTER"):
-
-                    st.write("")
-                    choose_10 = st.selectbox('CHOOSE OPTION',['Top 10', "Bottom 10"])
-
-                with col4.expander("FILTER"):
-
-                    st.write("")
-                    field = st.selectbox('CHOOSE FIELD',['Host',"Host Neighbourhood","Property Type","Room Type"])
-
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1.write("")
-                col1,col2,col3 = st.columns([15,20,5])
-                col2.markdown( f"<h1 style='font-size: 35px;'><span style='color: cyan;'> {choose_10} </span><span style='color: white;'> {field}  based on </span> <span style='color: cyan;'> Price </span></h1>",unsafe_allow_html=True)
-                
-                if choose_10 == 'Top 10':
-                    host_filter = df_1.groupby(f'{field}')['price'].sum().nlargest(10)
-
-                    name = host_filter.index.tolist()
-
-                    value = host_filter.values.tolist()
-                    fig = px.bar( x=name, y=value)
-                    fig.update_layout(title_x=1)
-                    fig.update_layout(
-                        plot_bgcolor='#0E1117',
-                        paper_bgcolor='#0E1117',
-                        xaxis_title_font=dict(color='#0DF0D4'),
-                        yaxis_title_font=dict(color='#0DF0D4')
-                    )
-                    fig.update_traces(hoverlabel=dict(bgcolor="#0E1117"),
-                                        hoverlabel_font_color="#0DF0D4")
-                    fig.update_xaxes(title_text="Host Name")
-
-                    fig.update_yaxes(title_text="Review Count")
-
-                    fig.update_traces(marker_color='#1BD4BD')
-                    
-                    st.plotly_chart(fig, theme=None, use_container_width=True)
-
-                elif choose_10 == "Bottom 10":
-                    host_filter = df_1.groupby(f'{field}')['price'].sum().nsmallest(10)
-
-                    name = host_filter.index.tolist()
-
-                    value = host_filter.values.tolist()
-                    fig = px.bar( x=name, y=value)
-                    fig.update_layout(title_x=1)
-                    fig.update_layout(
-                        plot_bgcolor='#0E1117',
-                        paper_bgcolor='#0E1117',
-                        xaxis_title_font=dict(color='#0DF0D4'),
-                        yaxis_title_font=dict(color='#0DF0D4')
-                    )
-                    fig.update_traces(hoverlabel=dict(bgcolor="#0E1117"),
-                                        hoverlabel_font_color="#0DF0D4")
-                    fig.update_xaxes(title_text="Host Name")
-
-                    fig.update_yaxes(title_text="Review Count")
-
-                    fig.update_traces(marker_color='#1BD4BD')
-                    
-                    st.plotly_chart(fig, theme=None, use_container_width=True)
-
-
-                style_metric_cards(
-                                    border_left_color='#08EED2',
-                                    background_color='#0E1117', border_color="#0E1117")
-                    
-                colored_header(
-                                label="",
-                                description="",
-                                color_name="blue-green-70", )
-        
-        elif selected == 'Tableau dashboard':
-                st.markdown("<style>div.block-container{padding-top:0rem;}</style>", unsafe_allow_html=True)
-
-                col1,col2,col3 = st.columns([5,10,5])
-                col2.write("")
-                col2.write("")
-                def lottie(filepath):
-                    with open(filepath, 'r') as file:
-                        return js.load(file)
-
-                col1, col2, col3 = st.columns([1, 10, 1])
-                with col2:
-                    file = lottie("d1.json")
-                    st_lottie(
-                        file,
-                        speed=1,
-                        reverse=False,
-                        loop=True,
-                        quality='low',
-                        height=900,
-                        width=1700,
-                        key=None
-                    )
-                col1,col2,col3 = st.columns([7,10,5])
-                col2.markdown( "<h1 style='font-size: 40px;'><span style='color: white;'>Press </span> <span style='color: cyan;'>'P'</span> <span style='color: white;'>To See Tableau Dashboard</span></h1>",unsafe_allow_html=True)
-                keyboard_to_url(key="P", url="https://public.tableau.com/shared/8N6QHKD7D?:display_count=n&:origin=viz_share_link")
-       
-        elif selected == 'Intro':
+        if selected == 'Intro':
             st.markdown("<style>div.block-container{padding-top:1rem;}</style>", unsafe_allow_html=True)
 
 
 
             # Start Intro
             col1, col2 = st.columns([11, 7])
-        
             with col1:
                 col1.write("")
                 col1.write("")
@@ -754,11 +116,53 @@ class airbnb:
             col1,col2,col3 = st.columns([10,10,2])
             with col1:
                 st.markdown(
-                    "<h1 style='font-size: 100px;'><span style='color:white;'>About </span><span style='color:Cyan;'> airbnb Project </span> </h1>",
+                    "<h1 style='font-size: 100px;'><span style='color:white;'>About </span><span style='color:Cyan;'>ICM Project </span> </h1>",
                     unsafe_allow_html=True)
             col1,col2,col3 = st.columns([2,10,2])
             with col2:
-                file = lottie("bike.json")
+                file = lottie("cyan_boy_lap2.json")
+                st_lottie(
+                    file,
+                    speed=1,
+                    reverse=False,
+                    loop=True,
+                    quality='low',
+                    # renderer='svg',
+                    height=800,
+                    width=1200,
+                    key=None
+                )
+            col2.write("")
+            col2.write("")
+            col2.write("")
+            col2.write("")
+            col2.write("")
+            col2.write("")
+                
+            col1,col2,col3 = st.columns([16,10,2])
+            with col1:
+                st.markdown(
+                    "<h1 style='font-size: 100px;'><span style='color:white;'>What has </span><span style='color:Cyan;'>Praveen </span><span style='color:white;'> Done ? </span> </h1>",
+                    unsafe_allow_html=True)
+            col1,col2,col3 = st.columns([5,10,2])
+            col2.write("")
+            col2.write("")
+            col2.write("")
+            with col2:
+                file = lottie("boydoubtface.json")
+                st_lottie(
+                    file,
+                    speed=1,
+                    reverse=False,
+                    loop=True,
+                    quality='low',
+                    # renderer='svg',
+                    height=800,
+                    width=800,
+                    key=None
+                )
+            with col2:
+                file = lottie("lets_start.json")
                 st_lottie(
                     file,
                     speed=1,
@@ -767,11 +171,40 @@ class airbnb:
                     quality='low',
                     # renderer='svg',
                     height=900,
-                    width=1300,
+                    width=900,
                     key=None
                 )
-                
-       
+            col2.write("")
+            col2.write("")
+            col2.write("")
+            col2.write("")
+            col2.write("")
+        
+
+
+            col1,col2,col3 = st.columns([16,10,2])
+            with col1:
+                st.markdown(
+                    "<h1 style='font-size: 100px;'><span style='color:white;'> </span><span style='color:Cyan;'>Problem </span><span style='color:white;'> Statement </span> </h1>",
+                    unsafe_allow_html=True)
+            col1,col2,col3 = st.columns([1,10,1])
+            
+            with col2:
+                st.write("")
+                st.write("")
+                st.write("")
+                st.write("")
+                st.write("")
+                st.write("")
+                st.write("")
+                st.write("")
+                st.markdown(
+                    "<h1 style='font-size: 60px;'><span style='color:white;'> Build </span><span style='color:cyan;'> Regression Model  </span><span style='color:white;'>TO Predict Selling Price </span> </h1>",
+                    unsafe_allow_html=True)
+                st.markdown(
+                    "<h1 style='font-size: 60px;'><span style='color:white;'> Build </span><span style='color:cyan;'> Classification Model  </span><span style='color:white;'>TO Predict Status </span> </h1>",
+                    unsafe_allow_html=True)
+            # Data collection and understanding
             col2.write("")
             col2.write("")
             col2.write("")
@@ -792,7 +225,7 @@ class airbnb:
             col2.write("")
             with col1:
                 st.markdown(
-                    "<h1 style='font-size: 90px;'><span style='color:cyan;'> Data  </span><span style='color:white;'> Collection </span><span style='color:cyan;'> </span> </h1>",
+                    "<h1 style='font-size: 90px;'><span style='color:cyan;'> Data Collection </span><span style='color:white;'> and  </span><span style='color:cyan;'>  Understand </span> </h1>",
                     unsafe_allow_html=True)
             col1,col2,col3 = st.columns([5,10,2])
             col2.write("")
@@ -801,7 +234,7 @@ class airbnb:
             col2.write("")
             col2.write("")
             with col2:
-                file = lottie("Mongo.json")
+                file = lottie("database.json")
                 st_lottie(
                     file,
                     speed=1,
@@ -831,7 +264,7 @@ class airbnb:
             col2.write("")
             col2.write("")
             with col2:
-                file = lottie("cyan_boy_lap2.json")
+                file = lottie("vacuum Cleaner.json")
                 st_lottie(
                     file,
                     speed=1,
@@ -880,14 +313,52 @@ class airbnb:
             col2.write("")
             col2.write("")
             col1,col2,col3 = st.columns([19,10,1])
+            col2.write("")
+            col2.write("")
+            col2.write("")
             with col1:
                 st.markdown(
-                    "<h1 style='font-size: 100px;'><span style='color:cyan;'> Dashboard </span><span style='color:white;'>  </span><span style='color:white;'> Process </span> </h1>",
+                    "<h1 style='font-size: 100px;'><span style='color:cyan;'> Model </span><span style='color:white;'>  </span><span style='color:white;'> Process </span> </h1>",
                     unsafe_allow_html=True)
             col1,col2,col3 = st.columns([5,10,2])
+            col2.write("")
            
             with col2:
-                file = lottie("d3.json")
+                file = lottie("model_training.json")
+                st_lottie(
+                    file,
+                    speed=1,
+                    reverse=False,
+                    loop=True,
+                    quality='low',
+                    # renderer='svg',
+                    height=1000,
+                    width=1000,
+                    key=None
+                )
+            col2.write("")
+            col2.write("")
+            col2.write("")
+            col1,col2,col3,col4 = st.columns([2,10,10,2])
+            with col2:
+                file = lottie("sellprice.json")
+                st_lottie(
+                    file,
+                    speed=1,
+                    reverse=False,
+                    loop=True,
+                    quality='low',
+                    # renderer='svg',
+                    height=700,
+                    width=700,
+                    key=None
+                )
+                
+            
+            # col1,col2,col3 = st.columns([10,3,10])
+
+            with col3:
+                file = lottie("classification.json")
                 st_lottie(
                     file,
                     speed=1,
@@ -896,57 +367,318 @@ class airbnb:
                     quality='low',
                     # renderer='svg',
                     height=900,
-                    width=1100,
+                    width=900,
                     key=None
                 )
-            # col2.write("")
-            # col2.write("")
-            # col2.write("")
-            # col1,col2,col3,col4 = st.columns([2,10,10,2])
-            # with col2:
-            #     file = lottie("sellprice.json")
-            #     st_lottie(
-            #         file,
-            #         speed=1,
-            #         reverse=False,
-            #         loop=True,
-            #         quality='low',
-            #         # renderer='svg',
-            #         height=700,
-            #         width=700,
-            #         key=None
-            #     )
+            col1,col2,col3,col4 = st.columns([3.6,15,10,2])
+            with col2:
+                st.markdown(
+                    "<h1 style='font-size: 50px;'><span style='color:cyan;'>      Regression </span><span style='color:white;'> Model </span><span style='color:white;'>  </span> </h1>",
+                    unsafe_allow_html=True)
+            with col3:
+                st.markdown(
+                    "<h1 style='font-size: 50px;'><span style='color:cyan;'> Classification </span><span style='color:white;'> Model </span><span style='color:white;'> </span> </h1>",
+                    unsafe_allow_html=True)
+            colored_header(
+                    label="",
+                    description="",
+                    color_name="blue-green-70"
+                )
                 
-            
-            # # col1,col2,col3 = st.columns([10,3,10])
+                
+        elif selected == 'Classification Model':
 
-            # with col3:
-            #     file = lottie("classification.json")
-            #     st_lottie(
-            #         file,
-            #         speed=1,
-            #         reverse=False,
-            #         loop=True,
-            #         quality='low',
-            #         # renderer='svg',
-            #         height=900,
-            #         width=900,
-            #         key=None
-            #     )
-            # col1,col2,col3,col4 = st.columns([4,15,10,2])
-            # with col2:
-            #     st.markdown(
-            #         "<h1 style='font-size: 50px;'><span style='color:cyan;'>      Regression </span><span style='color:white;'> Model </span><span style='color:white;'>  </span> </h1>",
-            #         unsafe_allow_html=True)
-            # with col3:
-            #     st.markdown(
-            #         "<h1 style='font-size: 50px;'><span style='color:cyan;'> Classification </span><span style='color:white;'> Model </span><span style='color:white;'> </span> </h1>",
-            #         unsafe_allow_html=True)
-        
-        elif selected == "Feedback":
+            st.markdown("<style>div.block-container{padding-top:1rem;}</style>", unsafe_allow_html=True)
+            col1,col2,col3 = st.columns([4,10,2])
+            with col2:
+                st.markdown(
+                    "<h1 style='font-size: 100px;'><span style='color: cyan;'>Classification </span><span style='color: white;'> Model</span> </h1>",
+                    unsafe_allow_html=True)
+            col1,col2,col3 = st.columns([4,10,5])
+            with col2:
+                colored_header(
+                    label="",
+                    description="",
+                    color_name="blue-green-70"
+                )
+            col1,col2,col3 = st.columns([2,10,2])
+            # Start from options
+            col2.write("")
+            col2.write("")
+            col2.write("")
+            col2.write("")
+            col2.write("")
+            col2.write("")  
+
+            with col2 :
+                st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Quantity  </span><span style='color: white;'> Ton </span> </h1>",
+                    unsafe_allow_html=True)
+                qt =  st.number_input('',min_value=0.1, max_value=1000000000.0, value=1.0)
+                quantity_log = np.log(qt)
+
+                #___________________________________________________________________________________________
+                st.write("")
+                st.write("")
+                st.markdown(
+                "<h1 style='font-size: 40px;'><span style='color: cyan;'>Customer  </span><span style='color: white;'> Value </span> </h1>",
+                unsafe_allow_html=True)
+                customer =  st.number_input('',min_value=12458.0, max_value=2147483647.0, value=12458.0,)
+                #________________________________________________________________________
+                st.write("")
+                st.write("")
+                st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Country  </span><span style='color: white;'> Code </span> </h1>",
+                    unsafe_allow_html=True)
+                country =  st.selectbox(' ',[ 28,  38,  78,  27,  30,  32,  77,  25, 113,  26,  39,  40,  84, 80,  79,  89, 107])
+                #________________________________________________________________________
+                st.write("")
+                st.write("")
+                st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Item  </span><span style='color: white;'> Type </span> </h1>",
+                    unsafe_allow_html=True)
+                cc = {'W':5, 'WI':6, 'S':3, 'Others':1, 'PL':2, 'IPL':0, 'SLAWR':4}
+                item_type =  st.selectbox('          ',cc)
+
+                #________________________________________________________________________
+                st.write("")
+                st.write("")
+                st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Application </span><span style='color: white;'> Code </span> </h1>",
+                    unsafe_allow_html=True)
+                av =  st.selectbox('          ',[2.0, 3.0, 4.0, 5.0, 10.0, 15.0, 19.0, 20.0, 22.0, 25.0, 26.0, 
+                        27.0, 28.0, 29.0, 38.0, 39.0, 40.0, 41.0, 42.0, 56.0, 58.0, 
+                        59.0, 65.0, 66.0, 67.0, 68.0, 69.0, 70.0, 79.0, 99.0])
+                
+                application_log = np.log(av)
+                #________________________________________________________________________
+                
+                st.write("")
+                st.write("")
+                st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Product </span><span style='color: white;'> Referal Code</span> </h1>",
+                    unsafe_allow_html=True)
+                
+                pr = [1670798778,     611993, 1668701376,  164141591,     628377,
+                                1671863738,     640665, 1332077137, 1668701718,     640405,
+                                1693867550, 1665572374, 1282007633, 1668701698,     628117,
+                                1690738206,     640400, 1671876026,     628112,  164336407,
+                                    164337175, 1668701725, 1665572032,     611728, 1721130331,
+                                1693867563,     611733, 1690738219, 1722207579, 1665584662,
+                                1665584642,  929423819, 1665584320]
+                product_ref = st.selectbox("",pr)
+
+                #________________________________________________________________________
+                with col2:
+                    st.write("")
+                    st.write("")
+                    st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Thickness  </span><span style='color: white;'> Value </span> </h1>",
+                    unsafe_allow_html=True)
+                    thickness =  st.number_input('',min_value=0.1, max_value=2500.000000, value=1.0)
+                    thickness_log = np.log(thickness)
+                #________________________________________________________________________
+                    st.write("")
+                    st.write("")
+                    st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Width  </span><span style='color: white;'> Value </span> </h1>",
+                    unsafe_allow_html=True)
+                    wv =  st.number_input('',min_value=1.0, max_value=2990.000000, value=1.0)
+                    width_log = np.log(wv)
+
+                #________________________________________________________________________
+                    st.write("")
+                    st.write("")
+                    st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Item  </span><span style='color: white;'> Date </span> </h1>",
+                    unsafe_allow_html=True)
+                    item_date = st.date_input(label='', min_value=date(1995,1,1), 
+                                            max_value=date(2021,12,31), value=date(2021,8,1))
+                #__________________________________________________________________________________________________________
+                    st.write("")
+                    st.write("")
+                    st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Delivery </span><span style='color: white;'> Date </span> </h1>",
+                    unsafe_allow_html=True)
+                    delivery_date = st.date_input(label='    ', min_value=date(2020,1,1), 
+                                            max_value=date(2023,12,31), value=date(2021,8,1))
+                #___________________________________________________________________________________________________________
+                    st.write("")
+                    st.write("")
+                    st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Selling </span><span style='color: white;'> Price </span> </h1>",
+                    unsafe_allow_html=True)
+                    sp =  st.number_input('',min_value=1.0, max_value=100001015.0, value=1.0)
+                    selling_price  = np.log(sp)
+
+                    predict_data = [quantity_log,customer,country,cc[item_type],application_log,thickness_log,width_log,product_ref,item_date.day,
+                                    item_date.month,item_date.year,delivery_date.day,delivery_date.month,delivery_date.year,
+                                    selling_price]
+                    
+                    with open('classification_model_icm.pkl', 'rb') as f:
+                        model = pickle.load(f)
+                col1,col2,col3 = st.columns([10,2,10])
+                
+                with col1 :
+                    st.write("")
+                    if st.button('Process'):
+                        x = model.predict([predict_data])
+                        if x[0] == 1.0:
+                            st.markdown(
+                                "<h1 style='font-size: 40px;'><span style='color: cyan;'>Predicted Status : </span><span style='color: white;'> Won </span> </h1>",
+                                unsafe_allow_html=True)
+                            
+                        elif x[0] == 0.0:
+                            st.markdown(
+                            "<h1 style='font-size: 40px;'><span style='color: cyan;'>Predicted Status : </span><span style='color: white;'> Lost </span> </h1>",
+                            unsafe_allow_html=True)
+                                     
+        elif selected == 'Regression Model':
+            st.markdown("<style>div.block-container{padding-top:1rem;}</style>", unsafe_allow_html=True)
+            col1,col2,col3 = st.columns([4,10,2])
+            with col2:
+                st.markdown(
+                    "<h1 style='font-size: 100px;'><span style='color: cyan;'>Regression </span><span style='color: white;'> Model</span> </h1>",
+                    unsafe_allow_html=True)
+            col1,col2,col3 = st.columns([4,10,7])
+            with col2:
+                colored_header(
+                    label="",
+                    description="",
+                    color_name="blue-green-70"
+                )
+            col1,col2,col3 = st.columns([2,10,2])
+            # Start from options
+            col2.write("")
+            col2.write("")
+            col2.write("")
+            col2.write("")
+            col2.write("")
+            col2.write("")  
+
+            with col2 :
+                st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Quantity  </span><span style='color: white;'> Ton </span> </h1>",
+                    unsafe_allow_html=True)
+                qt =  st.number_input('',min_value=0.1, max_value=1000000000.0, value=1.0)
+                quantity_log = np.log(qt)
+
+                #___________________________________________________________________________________________
+                st.write("")
+                st.write("")
+                st.markdown(
+                "<h1 style='font-size: 40px;'><span style='color: cyan;'>Customer  </span><span style='color: white;'> Value </span> </h1>",
+                unsafe_allow_html=True)
+                customer =  st.number_input('',min_value=12458.0, max_value=2147483647.0, value=12458.0,)
+                #________________________________________________________________________
+                st.write("")
+                st.write("")
+                st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Country  </span><span style='color: white;'> Code </span> </h1>",
+                    unsafe_allow_html=True)
+                country =  st.selectbox(' ',[ 28,  38,  78,  27,  30,  32,  77,  25, 113,  26,  39,  40,  84, 80,  79,  89, 107])
+                #________________________________________________________________________
+                st.write("")
+                st.write("")
+                st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Item  </span><span style='color: white;'> Type </span> </h1>",
+                    unsafe_allow_html=True)
+                cc = {'W':5, 'WI':6, 'S':3, 'Others':1, 'PL':2, 'IPL':0, 'SLAWR':4}
+                item_type =  st.selectbox('          ',cc)
+
+                #________________________________________________________________________
+                st.write("")
+                st.write("")
+                st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Application </span><span style='color: white;'> Code </span> </h1>",
+                    unsafe_allow_html=True)
+                av =  st.selectbox('          ',[2.0, 3.0, 4.0, 5.0, 10.0, 15.0, 19.0, 20.0, 22.0, 25.0, 26.0, 
+                        27.0, 28.0, 29.0, 38.0, 39.0, 40.0, 41.0, 42.0, 56.0, 58.0, 
+                        59.0, 65.0, 66.0, 67.0, 68.0, 69.0, 70.0, 79.0, 99.0])
+                
+                application_log = np.log(av)
+                #________________________________________________________________________
+                
+                st.write("")
+                st.write("")
+                st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Product </span><span style='color: white;'> Referal Code</span> </h1>",
+                    unsafe_allow_html=True)
+                
+                pr = [1670798778,     611993, 1668701376,  164141591,     628377,
+                                1671863738,     640665, 1332077137, 1668701718,     640405,
+                                1693867550, 1665572374, 1282007633, 1668701698,     628117,
+                                1690738206,     640400, 1671876026,     628112,  164336407,
+                                    164337175, 1668701725, 1665572032,     611728, 1721130331,
+                                1693867563,     611733, 1690738219, 1722207579, 1665584662,
+                                1665584642,  929423819, 1665584320]
+                product_ref = st.selectbox("",pr)
+
+                #________________________________________________________________________
+                with col2:
+                    st.write("")
+                    st.write("")
+                    st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Thickness  </span><span style='color: white;'> Value </span> </h1>",
+                    unsafe_allow_html=True)
+                    thickness =  st.number_input('',min_value=0.1, max_value=2500.000000, value=1.0)
+                    thickness_log = np.log(thickness)
+                #________________________________________________________________________
+                    st.write("")
+                    st.write("")
+                    st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Width  </span><span style='color: white;'> Value </span> </h1>",
+                    unsafe_allow_html=True)
+                    wv =  st.number_input('',min_value=1.0, max_value=2990.000000, value=1.0)
+                    width_log = np.log(wv)
+
+                #________________________________________________________________________
+                    st.write("")
+                    st.write("")
+                    st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Item  </span><span style='color: white;'> Date </span> </h1>",
+                    unsafe_allow_html=True)
+                    item_date = st.date_input(label='', min_value=date(1995,1,1), 
+                                            max_value=date(2021,12,31), value=date(2021,8,1))
+                #__________________________________________________________________________________________________________
+                    st.write("")
+                    st.write("")
+                    st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Delivery </span><span style='color: white;'> Date </span> </h1>",
+                    unsafe_allow_html=True)
+                    delivery_date = st.date_input(label='    ', min_value=date(2020,1,1), 
+                                            max_value=date(2023,12,31), value=date(2021,8,1))
+                #___________________________________________________________________________________________________________
+                    st.write("")
+                    st.write("")
+                    st.markdown(
+                    "<h1 style='font-size: 40px;'><span style='color: cyan;'>Status </span><span style='color: white;'> Code </span> </h1>",
+                    unsafe_allow_html=True)
+                    status_code = {'Won':1, 'Draft':2, 'To be approved':3, 'Lost':0, 'Not lost for AM':5, 'Wonderful':6, 'Revised':7, 'Offered':8, 'Offerable':4}
+                    Status =  st.selectbox('             ',status_code) 
+               
+                #_____________________________________________________________________________________________________________
+                    
+                    predict_data = [quantity_log,customer,country,cc[item_type],application_log,thickness_log,width_log,product_ref,item_date.day,
+                                    item_date.month,item_date.year,delivery_date.day,delivery_date.month,delivery_date.year,
+                                    status_code[Status]]
+                    
+                    with open('regression_model.pkl', 'rb') as f:
+                        model = pickle.load(f)
+                col1,col2,col3 = st.columns([10,1,10])
+                
+                with col1 :
+                    st.write("")
+                    if st.button('Process'):
+                        x = model.predict([predict_data])
+                        st.markdown(
+                                f"<h1 style='font-size: 40px;'><span style='color: cyan;'>Predicted Selling Price : </span><span style='color: white;'> {np.exp(x[0])}</span> </h1>",
+                                unsafe_allow_html=True)
+                            
+        elif selected == 'Feedback':
             praveen_1 = pm.MongoClient(
                 'mongodb://praveen:praveenroot@ac-cd7ptzz-shard-00-00.lsdge0t.mongodb.net:27017,ac-cd7ptzz-shard-00-01.lsdge0t.mongodb.net:27017,ac-cd7ptzz-shard-00-02.lsdge0t.mongodb.net:27017/?ssl=true&replicaSet=atlas-ac7cyd-shard-0&authSource=admin&retryWrites=true&w=majority')
-            db = praveen_1['Feedback_airbnb']
+            db = praveen_1['Feedback_icm']
             collection = db['comment']
 
             st.markdown("<style>div.block-container{padding-top:2rem;}</style>", unsafe_allow_html=True)
@@ -1184,8 +916,11 @@ class airbnb:
                     colored_header(
                         label="",
                         description="",
-                        color_name="blue-green-70", )
-# Object 
+                        color_name="blue-green-70", )                      
+                                    
+            
 
-Object = airbnb()
-Object.dashboard()
+# Object
+
+Object = App()
+Object.model()
