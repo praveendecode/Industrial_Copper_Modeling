@@ -47,7 +47,7 @@
 ##  4. Access the app in your browser:
           http://localhost:8501
 
-## Skills Covered
+# Skills Covered
     - Python
     - Numpy
     - Pandas
@@ -57,7 +57,7 @@
     - Pickle
     - Streamlit
 
-Results
+# Results
 - Classification: Achieved 98.999% accuracy with ExtraTrees Forest Classifier.
 - Regression: Achieved 98.3% accuracy with ExtraTrees Forest Regressor.
 
