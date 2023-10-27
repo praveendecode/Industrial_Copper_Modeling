@@ -1,4 +1,6 @@
 # Industrial Copper Modeling
+![image](https://github.com/praveendecode/Industrial_Copper_Modeling/assets/95226524/37b85295-a6d5-4205-9533-49cde584b5f3)
+
 
 # Overview
   Enhance data analysis and machine learning skills in the 'Industrial Copper Modeling' project. Tackle complex sales data challenges, employ regression models for pricing predictions, and master lead classification for targeted customer solutions
