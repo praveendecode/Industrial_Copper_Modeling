@@ -58,6 +58,7 @@
     - Seaborn
     - Pickle
     - Streamlit
+    - Docker
 
 # Results
 - Classification: Achieved 98.999% accuracy with ExtraTrees Forest Classifier.
