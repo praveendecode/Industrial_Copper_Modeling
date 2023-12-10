@@ -1,5 +1,6 @@
 # Industrial Copper Modeling
-![image](https://github.com/praveendecode/Industrial_Copper_Modeling/assets/95226524/37b85295-a6d5-4205-9533-49cde584b5f3)
+
+   ![image](https://github.com/praveendecode/Industrial_Copper_Modeling/assets/95226524/b0cbc601-570f-4d6b-9346-a8abdbb615fb)
 
 
 # Overview
