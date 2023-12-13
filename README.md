@@ -51,22 +51,21 @@
           http://localhost:8501
 
 # Skills Covered
-    - Python
-    - Numpy
-    - Pandas
-    - Scikit-Learn
-    - Matplotlib
-    - Seaborn
-    - Pickle
-    - Streamlit
-    - Docker
+   - Python
+   - Numpy
+   - Pandas
+   - Scikit-Learn
+   - Matplotlib
+   - Seaborn
+   - Pickle
+   - Streamlit
+   - Docker
 
 # Results
 - Classification: Achieved 98.999% accuracy with ExtraTrees Forest Classifier.
 - Regression: Achieved 98.3% accuracy with ExtraTrees Forest Regressor.
 
-# This project not only demonstrates data analysis and machine learning skills but also showcases practical applications for solving complex challenges in the manufacturing industry.
+### This project not only demonstrates data analysis and machine learning skills but also showcases practical applications for solving complex challenges in the manufacturing industry.
 
-## Connect Through Linkedin for Queries !!!
 
 
